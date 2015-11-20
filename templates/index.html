@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width,
+                                   initial-scale=1.0">
+    <!--link rel="stylesheet" href="css/bootstrap.min.css"-->
+    <!-- Latest compiled and minified CSS -->
+    <!--link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"-->
+    <link rel="stylesheet" href="static/css/bootstrap.css">
+    <link rel="stylesheet" href="static/css/bootstrap.css.map">
+    <link rel="stylesheet"
+          href="//cdn.jsdelivr.net/emojione/1.5.0/assets/css/emojione.min.css" />
+    <link rel="stylesheet" href="static/css/theme.css">
+    <link rel="stylesheet" href="static/css/jqcloud.css">
+    <link rel="stylesheet" href="static/css/bootstrap-tagsinput.css">
+    <link rel="stylesheet" href="static/css/BootSideMenu.css">
+  </head>
+  <body id="audio-tag-app">
+    <header>
+      <nav class="navbar navbar-inverse navbar-fixed-top custom-nav">
+        <div class="container">
+          <div class="navbar-header" >
+            <button type="button" class="navbar-toggle
+                                         collapsed" data-toggle="collapse"
+                    data-target="#navbar" aria-expanded="false"
+                    aria-controls="navbar">
+              <span class="sr-only">Toggle
+                navigation</span>
+              <span
+                 class="icon-bar"></span>
+              <span
+                 class="icon-bar"></span>
+              <span
+                 class="icon-bar"></span>
+            </button>
+            <img src="static/img/PAPAD5.png" class="papad-logo"
+            style="width:50px;"/>
+            <a id="homeAnchor"
+               class="navbar-brand custom-brand"
+               href="javascript:void(0)">Audio Tagger</a>
+          </div>
+          <div
+             id="navbar"
+             class="navbar-collapse
+                    collapse">
+            <!--ul class="nav nav-tabs pull-left main-nav">
+                <li role="presentation" class="active"><a href="#audio-list">Home</a></li>
+            <li role="presentation"><a href="#tag-clouds">Admin</a></li>
+            <li role="presentation"><a href="#upload-audio">Upload</a></li>
+</ul-->
+        <strong style="position: relative; top:15px; margin-left:70px;"> Click on the channels in the left side-pannel to browse
+            audio</strong>
+            <div class="pull-right user-state">
+              <!--button type="button" class="btn">
+                  <span id="signinmsg"></span>
+</button-->  
+              <!--a href="/login"><button type="button" id="sign-in" class="btn">
+                <span class="glyphicon glyphicon-globe"></span>
+                <span id="signinview">Sign In</span>
+              </button></a-->
+              <!--button type="button" class="btn">
+                  <span class="glyphicon glyphicon-option-horizontal"></span>
+</button-->
+              <!--a href="/login" ><button
+                  type="submit"
+                  class="btn
+                  btn-success" >
+                  Log In{{ user }}</button>
+                  </a-->
+            </div>
+            <!--form
+                class="navbar-form
+                navbar-right">
+                <div
+                   class="form-group">
+                  <input
+                     type="text"
+                     placeholder="Email"
+                     class="form-control">
+                </div>
+                <div
+                   class="form-group">
+                  <input
+                     type="password"
+                     placeholder="Password"
+                     class="form-control">
+                </div>
+</form-->
+          </div><!--/.navbar-collapse
+                  -->
+        </div>
+      </nav>
+    </header>
+    <section class="container col-md-3 col-lg-3 col-sm-3" id="tag-clouds">
+        <div class="wrapper">
+            <div class="sidebar-wrap">
+		
+                <div class="">
+                    <a class="menu-toggle" href="#">
+                        <span class="glyphicon
+                        glyphicon-align-justify
+                        pull-right"></span>
+                    </a>
+                </div>
+      <strong class="sidebar-heading">Channels</strong>
+                <div class="" id="channel-list">
+                    <ul class="list-group">
+                    </ul>
+
+                </div>
+      </div>
+
+        </div>
+    </section>
+
+    <section class="container" id="audio-list">
+        <div class="row" id="search-results-container">
+        </div>
+        <div class="row">
+            <div class="col-md-9 col-lg-9 col-sm-9" id="dashboard">
+                <div id="dashboard-body">
+
+
+          </div>
+        </div>
+        <div id="audio-play-area" class="col-md-offset-3 col-lg-offset-3
+            col-sm-offset-3 col-md-6 col-lg-6 col-sm-6 col-xs-offset-3">
+          <!--h4> Play Area </h4-->
+        </div>
+        <ul class="list-group" id="tag-cloud">
+        </ul>
+      </div>
+    </section>
+
+
+    <section class="container col-md-4 col-lg-4 col-sm-4" id="play-wrap">
+    </section>
+
+    <!--footer>
+        <span> Copyright </span>
+</footer-->
+
+    <script>
+      window.audioSwtr = window.audioSwtr || {};
+
+      audioSwtr.swtstoreURL = function() { return '{{ config.SWTSTORE_URL }}'; }
+      audioSwtr.endpoints = {
+      'get': '/api/sweets/q',
+      'post': '/api/sweets',
+      'context': '/api/contexts',
+      'auth': '/oauth/authorize',
+      'login': '/auth/login',
+      'logout': '/auth/logout'
+      };
+      audioSwtr.user_data = '{{ user_data }}';
+      audioSwtr.access_token = '{{ access_token }}';
+      audioSwtr.refresh_token = '{{ refresh_token }}';
+      audioSwtr.app_id = '{{ config.APP_ID }}';
+      audioSwtr.oauth_redirect_uri = '{{ config.REDIRECT_URI }}';
+      audioSwtr.allowedContexts = '{{ config.ALLOWED_CONTEXTS }}';
+      audioSwtr.superAdmins = ['salus.sage'];
+    </script>
+
+
+<script id="rawjson">
+    window.stations = window.stations || {};
+    window.stations = {"stations": 
+        [
+    {
+        "name":"default",
+        "adminUsers":["dinesh@servelots.com","bhanu@servelots.com","shalini@servelots.com","pradyumna@servelots.com"],
+        "store":"http://da.pantoto.org/api/stn/default"
+    },
+    {
+        "name":"radioactive",
+        "adminUsers":["dinesh@servelots.com"],
+        "store":"http://da.pantoto.org/api/stn/radioactive"
+    },
+    {
+        "name":"karnaticmuzic",
+        "adminUsers":["murali@nammacycle.in"],
+        "store":"http://da.pantoto.org/api/stn/karnaticmuzic"
+    },
+    {
+        "name":"anthillhacks",
+        "adminUsers":["pradyumna@servelots.com"],
+        "store":"http://da.pantoto.org/api/stn/anthillhacks"
+    }
+    ]
+  }
+  </script>
+    <!-- Templates -->
+    <script type="text/template" id="audio-item-template">
+<div class="col-md-5 col-lg-5 col-sm-5">
+      <div class="audio-feed">
+          <div class="post-card">
+
+            <div class="post-card-header">
+              <div class="feed-data">
+                <strong>uploaded on
+                  <%=uploadDate %> </strong>
+              </div>
+            </div>
+
+            <div class="col-md-offset-2 col-lg-offset-2 col-sm-offset-2 col-xs-offset-2
+                        post-card-body ">
+              <div class="audio-file-default" >
+                <!-- Simple audio playback -->
+                <audio controls="controls" preload="none"  >
+                  Your browser does not support the <code>audio</code> element.
+                  <% var encodedUrl = encodeURIComponent(url)%>
+                  <source src=<%=decodeURIComponent(encodedUrl).replace(' ',
+                                                                          '%20')%> >
+                </audio>
+              </div>
+            </div>
+
+          </div> <!-- end suggested tags container -->
+
+          <!-- social network action, like, share, options -->
+            <div class="col-md-offset-2 col-lg-offset-2 col-sm-offset-2
+                        ">
+              <div class="post-card-footer">
+                <button type="button"  class="btn btn-default add-tag-button"
+                        data-id="<%=id%>" data-placement="top"
+                        title="Tag" data-toggle="tooltip"
+                        >
+                  <span class="glyphicon glyphicon-tags"></span>
+                  <span class="feed-data"><%1%></span>
+                </button>
+              <!--div class="btn-group">
+                <button type="button" class="btn btn-default fav-button"
+                        data-toggle="tooltip" data-placement="top"
+                        title="Like" data-id="<%=id%>"  data-like="<%1%>">
+                  <span class="glyphicon glyphicon-chevron-up">
+                    <div id="#hiddendiv"></div>
+                  </span>
+                    <span class="feed-data"><%1%></span>
+                </button>
+                <button type="button" class="btn btn-default dislike-button"
+                        data-toggle="tooltip" data-placement="top"
+                        title="Dislike" data-id="<%=id%>"
+                        data-dislike="<%=1%>" >
+                  <span class="glyphicon glyphicon-chevron-down">
+                  </span>
+                  <span class="feed-data"><%1%></span>
+                </button>
+                <button type="button" class="btn btn-default share-button"
+                        data-toggle="tooltip" data-placement="top"
+                        title="Forward" data-forward="2" >
+                  <span class="glyphicon glyphicon-retweet">
+                  </span>
+                  <span class="feed-data">3</span>
+                </button>
+                </div-->
+              </div>
+            </div> <!--end tool-bar -->
+              <div class="recent-feed-data" data-id="<%= id %>" >
+                <button class="btn suggest-tag-title" type="button"
+                data-toggle="collapse" data-target="#<%=id%>"
+                aria-expanded="false" aria-controls="<%=id%>" > Suggested tags:
+                </button>
+                <div class="feed-data collapse" id="<%=id%>">
+              <ul>
+                <% for(var tag in tags) { %>
+                <li><span class="suggest-tag-item"><%=tags[tag] %></span></li>
+                <% } %>
+              </ul>
+                </div>
+              </div>
+            </div>
+        </div>
+        </div> <!-- end post card with audio feed data -->
+
+
+</div> <!-- end audio-feed -->
+    </script>
+
+    <script type="text/template" id="play-item-template">
+<div class="">
+<div class="audio-feed">
+      <div class="post-card">
+
+        <div class="post-card-header">
+          <div class="feed-data">
+            <strong> Uploaded on <%=uploadDate%> </strong>
+          </div>
+        </div>
+
+        <div class="col-md-offset-2 col-lg-offset-2 col-sm-offset-2
+                    col-xs-offset-2 post-card-body ">
+          <div class="audio-file-default" data-id="<%= id %>">
+            <!-- Simple audio playback -->
+            <audio controls="controls" autobuffer="true" preload="auto">
+              Your browser does not support the <code>audio</code> element.
+              <% var encodedUrl = encodeURIComponent(url)%>
+              <source src=<%=decodeURIComponent(encodedUrl).replace(' ',
+                                                                      '%20')%> >
+            </audio>
+          </div>
+        </div>
+
+      </div> <!-- end suggested tags container -->
+
+      <!-- social network action, like, share, options -->
+      <!--div class="row">
+        <div class="col-md-offset-2 col-lg-offset-2 col-sm-offset-2
+                    ">
+          <div class="post-card-footer">
+            <button type="button"  class="btn btn-default add-tag-button"
+                    data-id="<%=id%>" data-placement="top"
+                    title="Tag" data-toggle="tooltip"
+                    >
+              <span class="glyphicon glyphicon-tags"></span>
+              <span class="feed-data"></span>
+            </button>
+            <button type="button" class="btn btn-default fav-button"
+                    data-toggle="tooltip" data-placement="top"
+                    title="Like" >
+              <span class="glyphicon glyphicon-chevron-up">
+                <span class="feed-data">1</span>
+                <div id="#hiddendiv"></div>
+              </span>
+            </button>
+            <button type="button" class="btn btn-default fav-button"
+                    data-toggle="tooltip" data-placement="top"
+                    title="Dislike" >
+              <span class="glyphicon glyphicon-chevron-down">
+              </span>
+              <span class="feed-data">1</span>
+            </button>
+            <button type="button" class="btn btn-default
+                                         share-button"data-toggle="tooltip" data-placement="top"
+                    title="Coming soon!" >
+              <span class="glyphicon glyphicon-retweet">
+              </span>
+              <span class="feed-data">3</span>
+            </button>
+            <!--button type="button" class="btn btn-default
+                options-button"data-toggle="tooltip" data-placement="top"
+                title="Options" >
+                <span class="glyphicon glyphicon-option-vertical">
+                </span>
+</button-->
+          </div>
+        </div> <!--end tool-bar -->
+    </div-->
+    </div> <!-- end post card with audio feed data -->
+  </div>
+</div> <!-- end audio-feed -->
+<div class=" tag-editor">
+  <div class="form-group">
+    <input type="text" data-role="tagsinput" class="form-control"
+           id="add-tag" placeholder="Add Tags">
+    <!--select multiple data-role="tagsinput">
+        </select-->
+    <button type="button" class="btn" id="submit-form"> Submit </button>
+  </div>
+  <div class="clearfix"></div>
+</div>
+  </div>
+</script>
+<!--Swts container -->
+<script type="text/template" id="sweets-template">
+<div class="row " style="padding:15px;">
+<div class="profile-image">
+            <img src="static/img/person-placeholder.jpg" alt="profile-pic"
+                 class="img-responsive custom-profile-pic">
+          <%=who%>         
+          </div>
+          <div class="tags-container">
+          tagged this audio: <%=how.tags%>
+          </div>
+
+          </div>
+
+</script>
+<script type="text/template" id="tags-list-template">
+<div class="recent-feed-data" >
+            <button class="btn" type="button" data-toggle="collapse"
+            data-target="#<%=id%>" aria-expanded="true"
+            aria-controls="<%=id%>" >Suggested Tags: </button>
+            <div class="feed-data collapse in" id="<%=id%>">
+              <ul>
+                <% for(var tag in tags) { %>
+                <li><span class="suggest-tag-item"><%=tags[tag] %></span></li>
+                <% } %>
+              </ul>
+            </div>
+          </div>
+</script>
+<script type="text/template" id="search-results-template">
+<div class="col-md-4 col-lg-4 col-sm-4">
+      <div class="audio-feed">
+          <div class="post-card">
+
+            <div class="post-card-header">
+            </div>
+
+            <div class="col-md-offset-2 col-lg-offset-2 col-sm-offset-2 col-xs-offset-2
+                        post-card-body ">
+              <div class="audio-file-default" >
+                <!-- Simple audio playback -->
+                <audio controls="controls" preload="none"  >
+                  Your browser does not support the <code>audio</code> element.
+                  <% var encodedUrl = encodeURIComponent(url)%>
+                  <source src=<%=decodeURIComponent(encodedUrl).replace(' ',
+                                                                          '%20')%> >
+                </audio>
+              </div>
+            </div>
+
+          </div> <!-- end suggested tags container -->
+        <div class="col-md-offset-2 col-lg-offset-2 col-sm-offset-2
+          col-xs-offset-2 post-card-body ">
+          <div class="recent-feed-data" data-id="<%= id %>">
+          <div class="profile-image">
+            <img src="static/img/person-placeholder.jpg" alt="profile-pic"
+            class="img-responsive custom-profile-pic">
+          </div>
+          <div class="feed-data">
+            <strong><%=who%> </strong> 
+            Suggested Tags: 
+              <ul>
+                <% for(var tag in how.tags) { %>
+                  <li><span class="suggest-tag-item"><%=
+                    how.tags[tag] %></span></li>
+                  <% } %>
+              </ul>
+            </div>
+          <em><%=created %></em>
+          </div>
+        </div>
+
+      </div> <!-- end suggested tags container -->
+    </script>
+    <script type="text/template" id="alert-template">
+<div class="alert alert-danger alert-dismissible" role="alert">
+  <button type="button" class="close" data-dismiss="alert"
+  aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <strong>Warning!</strong> <%=message%>    </div>
+    </script>
+    <script type="text/template" id="search-header-template">
+<div class="alert alert-success alert-dismissible" role="alert">
+  <button type="button" class="close" data-dismiss="alert"
+  aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <strong><%=message%></strong>     </div>
+    </script>
+
+    <script type="text/template" id="stations-template">
+<li class="list-group-item" >
+<%=name%>
+</li>
+    </script>
+<!-- js libraries -->
+  <script src="static/js/jquery.min.js"></script> <!-- jquery version
+  1.11.3-->
+  <script src="static/js/underscore-min.js"> </script>
+  <script src="static/js/backbone-min.js"> </script>
+  <script src="static/js/bootstrap.js"> </script>
+  <script src="static/js/bootstrap-tagsinput.min.js"> </script>
+  <script src="static/js/jqcloud.js"> </script> <!-- for tag cloud
+  visualization -->
+  <script src="static/js/BootSideMenu.js"> </script> <!-- bootstrap+jquery
+  plugin for side menu-->
+  <script src="static/js/oauth.js"> </script>
+  <script src="static/js/theme.js"> </script>
+  <!--script
+      src="//cdn.jsdelivr.net/emojione/1.5.0/lib/js/emojione.min.js"></script-->
+</body>
+</html>

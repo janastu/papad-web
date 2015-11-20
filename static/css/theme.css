@@ -1,0 +1,255 @@
+/*Audio Tagging app */
+
+/* Global styles */
+html body {
+  background-color: #E5E5E5;
+}
+#loader{
+    margin-top:-150px;
+}
+.list-group-item {
+    cursor: pointer;
+}
+#dashboard{
+    margin-left:150px;
+}
+.btn {
+  margin:1px;
+  border:none;
+  border-radius: 0px;
+}
+.alert {
+    width: 400px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* end of global styles */
+
+
+/* header and nav section  */
+
+header {
+  height: 50px;
+}
+.custom-nav {
+  background-color: #03a9f4;
+  border-color: #03a9f4;
+}
+.custom-nav .custom-brand {
+  color: #fff;
+}
+.main-nav {
+  margin-left: 10px;
+  margin-top: 4px;
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+}
+.user-state{
+  padding: 10px;
+  color: white;
+}
+.user-state .btn{
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+}
+/* end of header and nav section*/
+
+
+/* audio list view - */
+#audio-list {
+  height: 1080px;
+  margin-top:15px;
+}
+.audio-feed {
+  border: 1px solid #ccc;
+  background-color: #ffffff;
+  margin-bottom: 5px;
+  padding: 15px;
+}
+.feed-data {
+  display: block;
+  color: #999;
+  padding: 5px;
+
+}
+.post-card-header {
+  display: inline-flex;
+  height: 35px;
+  margin-left: 15px;
+}
+.post-card-body{
+  width: auto;
+  margin: 0 auto;
+  padding: 13px;
+  overflow: auto;
+}
+.post-card-footer {
+  margin-left: 30px;
+}
+.profile-image {
+  width:75px;
+  height: 85px;
+}
+.custom-profile-pic {
+  width:70px;
+}
+.feed-stats {
+  margin-left: 15px;
+  margin-top: 5px;
+}
+.feed-stats span {
+  padding: 5px;
+}
+.recent-feed-data {
+  border: 1px solid #ccc;
+  width: auto;
+
+}
+/*end of audio list view */
+
+
+/*audio play area - to add additional attributes to audio
+ * file*/
+#play-wrap {
+  margin-top:15px;
+}
+
+#audio-play-area {
+  background-color: #fff;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+audio {
+  width: 275px;
+}
+#submit-form {
+  margin-top: -7px;
+}
+.play-tag-input {
+  display: block;
+  padding: 15px;
+}
+#add-tag{
+  border-radius: 0px;
+}
+.tag-editor {
+  margin-left: 0px;
+}
+/*end of audio play area */
+
+
+/* tag cloud view for tags and user activity visualization*/
+.sidebar-wrap {
+    webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -o-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
+    margin-left: -225px;
+    left: 0px;
+    width: 250px;
+    background: #f0f0f0;
+    position: fixed;
+    height: auto;
+    z-index: 10000;
+    -webkit-transition: all .4s ease 0s;
+    -moz-transition: all .4s ease 0s;
+    -o-transition: all .4s ease 0s;
+    -ms-transition: all .4s ease 0s;
+    transition: all .4s ease 0s;
+    box-shadow: 1px 1px 1px #262525;
+    border-left: none;
+    padding-right: 5px;
+    padding-left: 10px;
+}
+
+.wrapper.active {
+    padding-left: 0px;
+}
+.wrapper.active .sidebar-wrap {
+    left: 225px;
+}
+#channel-list {
+    padding-right:15px;
+}
+#tag-clouds {
+  margin-top: 15px;
+}
+#tag-cloud {
+  height: 100vh;
+  overflow-y: scroll;
+  width: 250px;
+  position: fixed;
+  top:55px;
+  right: 0px;
+  background-color: #fff;
+  margin-left: 15px;
+  border: 1px solid #ccc;
+  display:none;
+}
+#tag-cloud ul {
+  list-style: none;
+}
+#tag-cloud span {
+    cursor: pointer;
+}
+/*tag view in feed*/
+.suggest-tag-title {
+  margin:1px;
+  padding: 5px;
+}
+.suggest-tag-item {
+  margin: 1px;
+  display: inline-block;
+  text-align: center;
+  border-radius: 12px;
+  padding: 5px;
+  background-color: rgba(200, 200, 200, 0.5);
+  cursor: pointer;
+  font-weight: 600;
+}
+.collapse ul li {
+  list-style: none;
+  display:none;
+}
+.collapse.in ul li {
+  list-style: none;
+  display:inline;
+}
+.admin-forms {
+  padding: 15px;
+}
+styles inside side menu is not applied
+ #admin-panel{
+  padding: 10px;
+}
+#upload-audio {
+  padding: 10px;
+}
+/*end of tag cloud view*/
+
+/* User activity container audio-list-right-column*/
+#play-wrap .user-activity {
+  width: 200px;
+}
+.user-activity {
+  background-color: #fff;
+  padding: 15px;
+  border: 1px solid #ccc;
+  height: 300px;
+}
+.user-activity-item {
+  padding:10px;
+  border: 1px solid #ccc;
+  margin: 0 auto;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+/* end user activity container */
+
+/* search results alert */
+#search-results-container .alert strong h3 {
+    display: inline;
+}
