@@ -179,7 +179,7 @@ audio {
 #tag-cloud {
   height: 100vh;
   overflow-y: scroll;
-  width: 250px;
+  /*width: 250px;*/
   position: fixed;
   top:55px;
   right: 0px;
