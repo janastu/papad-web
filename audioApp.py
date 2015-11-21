@@ -4,6 +4,7 @@ import requests
 import json
 from datetime import datetime, timedelta
 from flask.ext.cors import CORS, cross_origin
+from flask_oauth2_login import GoogleLogin
 from flask_oauthlib.client import OAuth
 from flask.ext.pymongo import PyMongo
 
