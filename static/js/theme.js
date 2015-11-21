@@ -226,7 +226,6 @@ var dashboardview = Backbone.View.extend({
             autoClose: true});*/
     },
     render: function() {
-        audioTagApp.landing.$el.hide();
         this.collection.each(function(item) {
             this.$el.append(this.template({
                 id: item.get('id'),
@@ -402,6 +401,7 @@ stationListView = Backbone.View.extend({
     },
     callDash: function(event) {
 
+        audioTagApp.landing.$el.hide();
         $("#homeAnchor").text($(event.currentTarget).text().toUpperCase());
         this.audioCollection = new audioCollection({ url: "http://da.pantoto.org/api/stn/"+$(event.currentTarget).text()});
         $("#dashboard").prepend("<div class='loader' style='margin-top:-150px'><img src='static/img/PAPAD5.png' /></div>");
