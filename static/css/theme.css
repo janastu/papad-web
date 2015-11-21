@@ -10,9 +10,6 @@ html body {
 .list-group-item {
     cursor: pointer;
 }
-#dashboard{
-    margin-left:150px;
-}
 .btn {
   margin:1px;
   border:none;
