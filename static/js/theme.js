@@ -36,20 +36,25 @@
         this.renderTags();
     },
      submitToDa: function(event) {
-        event.stopPropagation();
-        $.ajax({
-            type: "post",
-            url: "http://da.pantoto.org/api/tags/"+this.model.id,
-            data: {tags: $("#add-tag").tagsinput('items')},
-            context: this,
-            success: function(resp) {
-                this.model.get('tags').push($("#add-tag").tagsinput('items'));
-                this.renderTags();
-            },
-            error: function() {
-                console.log("error!!");
-            }
-        });
+        event.preventDefault();
+        if(audioSwtr.user_email) {
+            $.ajax({
+                type: "post",
+                url: "http://da.pantoto.org/api/tags/"+this.model.id,
+                data: {tags: $("#add-tag").tagsinput('items')},
+                context: this,
+                success: function(resp) {
+                    this.model.get('tags').push($("#add-tag").tagsinput('items'));
+                    this.renderTags();
+                },
+                error: function() {
+                    console.log("error!!");
+                }
+            });
+        }
+        else {
+          this.$el.prepend(this.alertsTemplate({message: "You need to Sign In" }));
+        }
     },
     renderTags: function() {
         this.$el.find('.tag-editor .recent-feed-data').remove();
@@ -221,6 +226,7 @@ var dashboardview = Backbone.View.extend({
             autoClose: true});*/
     },
     render: function() {
+        audioTagApp.landing.$el.hide();
         this.collection.each(function(item) {
             this.$el.append(this.template({
                 id: item.get('id'),
@@ -364,8 +370,19 @@ var dashboardview = Backbone.View.extend({
 
   });
 
+landingView = Backbone.View.extend({
+    el: "#landing-content",
+    initialize: function() {
+        this.landingTemplate = _.template($("#landing-template").html());
+        this.render();
+    },
+    render: function() {
+        this.$el.append(this.landingTemplate());
+    }
+});
+
 stationListView = Backbone.View.extend({
-    el: $('#channel-list'),
+    el: "#channel-list",
     events: {
         "click li" : "callDash"
     },
@@ -409,8 +426,9 @@ stationListView = Backbone.View.extend({
 var appview = Backbone.View.extend({
     el: $('body'),
     events:{
-        "click #homeAnchor": "callDashboard"
-       // 'click #sign-in': 'signIn'
+        "click #homeAnchor": "callDashboard",
+        'click #sign-in': 'signIn',
+        'click #sign-out': 'signOut'
     },
     initialize: function(options) {
         _.bindAll(this, 'callDashboard');
@@ -423,10 +441,9 @@ var appview = Backbone.View.extend({
             scopes: 'email,sweet,context'
         });
         this.station= new stationListView();
+        this.landing = new landingView();
         $("#audio-play-area").html('');
         //audioSwtr.storeCollection = new audioSwtr.AudioAnnoSwts();
-        
-        	
     },
     getSweets: function() {
         audioSwtr.storeCollection.getAll({
@@ -450,21 +467,14 @@ var appview = Backbone.View.extend({
        //                                   collection: this.audioCollection });
       //this.tagCloud = new tagCloudView({collection: audioSwtr.storeCollection});
     },
-    signIn: function(event) {
-        event.preventDefault();
-        console.log("calling sign in");
-        // if user is Guest.. sign them in..
-        // if(audioSwtr.who === 'Guest') {
-        //     console.log("authorizing");
-        this.oauth.authorize();
-        // }
-        // return false;
-    },
     userLoggedIn: function(username) {
-        audioSwtr.who = username;
+        $("#signinmsg").show();
+    
+        /*    audioSwtr.who = username;
         var text = 'Signed in as <b><u>' + audioSwtr.who + '</u></b>';
         $('#signinview').html('Sign Out');
         $('#signinmsg').html(text);
+        $(".user-state").append(_.template('<button type="button" id="sign-out" class="btn"><span class="glyphicon glyphicon-globe"></span><span id="signinview">Sign Out</span></button>'));*/
         // $.ajax({
         //   url:"http://locahost:5001/api/sweets/q?access_token="+audioSwtr.access_token,
         //   type: 'POST',
@@ -476,9 +486,7 @@ var appview = Backbone.View.extend({
         // });
     },
     userLoggedOut: function() {
-        audioSwtr.who = 'Guest';
-        $('#signinview').html('Log In');
-        $('#signinmsg').parent().remove();
+        $('#signinmsg').hide();
     },
     callDashboard: function(event) {
         console.log(event);

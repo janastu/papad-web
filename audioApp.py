@@ -1,10 +1,15 @@
 from flask import (Flask, session, render_template, request, redirect,
-                   url_for, make_response, Blueprint, current_app)
+                   url_for, make_response, Blueprint, current_app, jsonify, flash, json)
 import requests
 import json
 from datetime import datetime, timedelta
 from flask.ext.cors import CORS, cross_origin
 from flask_oauthlib.client import OAuth
+from flask.ext.pymongo import PyMongo
+
+    
+
+# Converting to JSON with bson.json_util of pymongo
 
 
 app = Flask(__name__)
@@ -24,6 +29,8 @@ google = oauth.remote_app(
     authorize_url='https://accounts.google.com/o/oauth2/auth',
 )
 CORS(app, allow_headers=('Content-Type', 'Authorization'))
+mongo = PyMongo(app)
+
 
 
 @app.route('/', methods=['GET'])
@@ -31,45 +38,21 @@ CORS(app, allow_headers=('Content-Type', 'Authorization'))
 def index():
 
     # if auth_tok is in session already..
-    if 'auth_tok' in session:
-        auth_tok = session['auth_tok']
-
-        # check if it has expired
-        oauth_token_expires_in_endpoint = current_app.config.get(
-            'SWTSTORE_URL')+'/oauth/token-expires-in'
-        resp = requests.get(oauth_token_expires_in_endpoint)
-        expires_in = json.loads(resp.text)['expires_in']
-
-        # added for backwared compatibility. previous session stores did not
-        # have issued key
-        try:
-            check = datetime.utcnow() - auth_tok['issued']
-
-            if check > timedelta(seconds=expires_in):
-                # TODO: try to refresh the token before signing out the user
-                auth_tok = {'access_token': '', 'refresh_token': ''}
-            else:
-                """access token did not expire"""
-                pass
-
-        # if issued key is not there, reset the session
-        except KeyError:
-            auth_tok = {'access_token': '', 'refresh_token': ''}
+    if 'google_token' in session:
+        print repr(session)
+        auth_tok = session['google_token']
+	me = session['message']
+	print repr(me)
+        flash("Welcome" + " " + me.get('name') + "!")
+        
 
     else:
+	session['message'] = {'email':''}
         auth_tok = {'access_token': '', 'refresh_token': ''}
-
-    # print 'existing tokens'
-    # print auth_tok
-    # payload = {'what': 'audio-tagger',
-    #        'access_token': auth_tok['access_token']}
-    # req = requests.get(current_app.config.get(
-    #    'SWTSTORE_URL', 'SWTSTORE_URL') + '/api/sweets/q', params=payload)
-    # sweets = req.json()
-    return render_template('index.html', access_token=auth_tok['access_token'],
-                           refresh_token=auth_tok['refresh_token'],
-                           config=current_app.config,
-                           url=request.args.get('where'))
+     
+    return render_template('index.html', access_token=auth_tok,
+                           refresh_token=auth_tok, session=session['message'],  
+                           config=current_app.config)
 
 
 @app.route('/authenticate', methods=['GET'])
@@ -106,6 +89,47 @@ def authenticateWithOAuth():
 @cross_origin()
 def admin():
     return render_template('admin.html')
+
+
+@app.route('/login')
+def login():
+    return google.authorize(callback=url_for('authorized', _external=True))
+
+
+@app.route('/logout')
+def logout():
+    session.pop('google_token', None)
+    session.pop('message', None)
+    return redirect(url_for('index'))
+
+
+@app.route('/login/authorized')
+def authorized():
+    
+    resp = google.authorized_response()
+    if resp is None:
+        return 'Access denied: reason=%s error=%s' % (
+            request.args['error_reason'],
+            request.args['error_description']
+        )
+    session['google_token'] = (resp['access_token'], '')
+    me = google.get('userinfo')
+    # user profiles record
+    # mongo.db.users.save(jsonify(me.data))
+    userdata = jsonify({"data": me.data})
+    message=json.dumps(me.data)
+    session['message'] = me.data
+    # flash("Welcome" + me.data.get('name'))
+
+    # return render_template('index.html', user_data=userdata.data, config=app.config, access_token = session['google_token'])
+    # return jsonify({"data": me.data})
+    return redirect(url_for('index'))
+
+
+
+@google.tokengetter
+def get_google_oauth_token():
+    return session.get('google_token')
 
 
 @app.route('/signup', methods=['POST'])

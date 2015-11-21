@@ -1,24 +1,41 @@
-<!doctype html>
-<head>
-<title>{% block title %}Welcome{% endblock %} | Flask OAuth Example</title>
-<link rel=stylesheet type=text/css href="{{ url_for('static',
-  filename='style.css') }}">
-</head>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width,
+                                   initial-scale=1.0">
+    <!--link rel="stylesheet" href="css/bootstrap.min.css"-->
+    <!-- Latest compiled and minified CSS -->
+    <!--link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"-->
+    <link rel="stylesheet" href="static/css/bootstrap.css">
+    <link rel="stylesheet" href="static/css/bootstrap.css.map">
+    <link rel="stylesheet" href="static/css/theme.css">
+    <link rel="stylesheet" href="static/css/jqcloud.css">
+    <link rel="stylesheet" href="static/css/bootstrap-tagsinput.css">
+    <link rel="stylesheet" href="static/css/BootSideMenu.css">
+  </head>
+  <body id="audio-tag-app">
+
 <body>
-<h1>Flask OAuth Example</h1>
-<ul class=navigation>
-  <li><a href="{{ url_for('index') }}">overview</a></li>
-  {% if g.user %}
-  <li><a href="{{ url_for('logout') }}">sign out [{{ g.user.screen_name}}]</a></li>
-  {% else %}
-  <li><a href="{{ url_for('login') }}">sign in</a></li>
-  {% endif %}
-</ul>
-{% for message in get_flashed_messages() %}
-  <p class=message>{{ message }}</p>
-{% endfor %}
+
 {% block body %}{% endblock %}
 
+<!-- js libraries -->
+  <script src="static/js/jquery.min.js"></script> <!-- jquery version
+  1.11.3-->
+  <script src="static/js/underscore-min.js"> </script>
+  <script src="static/js/backbone-min.js"> </script>
+  <script src="static/js/bootstrap.js"> </script>
+  <script src="static/js/bootstrap-tagsinput.min.js"> </script>
+  <script src="static/js/jqcloud.js"> </script> <!-- for tag cloud
+  visualization -->
+  <script src="static/js/BootSideMenu.js"> </script> <!-- bootstrap+jquery
+  plugin for side menu-->
+  <script src="static/js/oauth.js"> </script>
+  <script src="static/js/theme.js"> </script>
  
 </body>
 </html>

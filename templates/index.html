@@ -1,25 +1,5 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width,
-                                   initial-scale=1.0">
-    <!--link rel="stylesheet" href="css/bootstrap.min.css"-->
-    <!-- Latest compiled and minified CSS -->
-    <!--link rel="stylesheet"
-        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"-->
-    <link rel="stylesheet" href="static/css/bootstrap.css">
-    <link rel="stylesheet" href="static/css/bootstrap.css.map">
-    <link rel="stylesheet"
-          href="//cdn.jsdelivr.net/emojione/1.5.0/assets/css/emojione.min.css" />
-    <link rel="stylesheet" href="static/css/theme.css">
-    <link rel="stylesheet" href="static/css/jqcloud.css">
-    <link rel="stylesheet" href="static/css/bootstrap-tagsinput.css">
-    <link rel="stylesheet" href="static/css/BootSideMenu.css">
-  </head>
-  <body id="audio-tag-app">
+{% extends "layout.html" %}
+{% block body %}
     <header>
       <nav class="navbar navbar-inverse navbar-fixed-top custom-nav">
         <div class="container">
@@ -56,42 +36,34 @@
             audio</strong>
             <div class="pull-right user-state">
               <!--button type="button" class="btn">
-                  <span id="signinmsg"></span>
+                  <span id="signinmsg">
+                  </span>
 </button-->  
-              <!--a href="/login"><button type="button" id="sign-in" class="btn">
-                <span class="glyphicon glyphicon-globe"></span>
-                <span id="signinview">Sign In</span>
-              </button></a-->
-              <!--button type="button" class="btn">
-                  <span class="glyphicon glyphicon-option-horizontal"></span>
-</button-->
-              <!--a href="/login" ><button
-                  type="submit"
-                  class="btn
-                  btn-success" >
-                  Log In{{ user }}</button>
-                  </a-->
-            </div>
-            <!--form
-                class="navbar-form
-                navbar-right">
-                <div
-                   class="form-group">
-                  <input
-                     type="text"
-                     placeholder="Email"
-                     class="form-control">
-                </div>
-                <div
-                   class="form-group">
-                  <input
-                     type="password"
-                     placeholder="Password"
-                     class="form-control">
-                </div>
-</form-->
-          </div><!--/.navbar-collapse
-                  -->
+    {% if not session.get('email') %}
+<a href="/login" ><button type="button" id="sign-in" class="btn">
+                                  <span id="signinview">Sign In</span>
+    </button></a>
+    {% else %}
+    {% if "bhanu@servelots.com" in session.get('email') %}
+<a href="{{ url_for('admin') }}"><button type="button" id="sign-out" class="btn">
+                                  <span id="signinview">Admin</span>
+    </button></a>
+{% endif %}
+<div class="btn" id="signinmsg"><span class="glyphicon glyphicon-globe"></span>
+                <span >
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+                    {% for message in messages %}
+                          {{ message }}
+                              {% endfor %}
+          {% endif %}
+        {% endwith %}
+                  </span>
+</div>
+<a href="{{ url_for('logout') }}"><button type="button" id="sign-out" class="btn">
+                                  <span id="signinview">Sign out</span>
+    </button></a>
+    {% endif %}
         </div>
       </nav>
     </header>
@@ -118,6 +90,8 @@
     </section>
 
     <section class="container" id="audio-list">
+        <div id="landing-content">
+        </div>
         <div class="row" id="search-results-container">
         </div>
         <div class="row">
@@ -156,13 +130,13 @@
       'login': '/auth/login',
       'logout': '/auth/logout'
       };
-      audioSwtr.user_data = '{{ user_data }}';
       audioSwtr.access_token = '{{ access_token }}';
       audioSwtr.refresh_token = '{{ refresh_token }}';
       audioSwtr.app_id = '{{ config.APP_ID }}';
       audioSwtr.oauth_redirect_uri = '{{ config.REDIRECT_URI }}';
       audioSwtr.allowedContexts = '{{ config.ALLOWED_CONTEXTS }}';
-      audioSwtr.superAdmins = ['salus.sage'];
+      audioSwtr.session_data = '{{ session }}';
+      audioSwtr.user_email = '{{ session.email }}';
     </script>
 
 
@@ -194,6 +168,27 @@
   }
   </script>
     <!-- Templates -->
+    <script type="text/template" id="landing-template">
+<div class="jumbotron">
+      <div class="container">
+              <h1>Audio Tagger</h1>
+              <p>An application designed to listen and tag audio files
+              by a CR station community. These tags (the meta
+              information) can then be used to search, sort and share a
+              large collection of audio files – eg., when community
+              calls a CR station and leaves messages in large numbers,
+              or when a CR Station wants to put their program content
+              out so that the community can listen to it and also
+              categorize it for their own convenience. To quote in one
+              line, the tool is a community-oriented content curation
+              for audio files.
+              </p>
+                              <!--p><a class="btn btn-primary btn-lg"
+                                    href="#" role="button">Learn more
+                                    »</a></p-->
+                                          </div>
+                                              </div>
+    </script>
     <script type="text/template" id="audio-item-template">
 <div class="col-md-5 col-lg-5 col-sm-5">
       <div class="audio-feed">
@@ -456,20 +451,8 @@
 <%=name%>
 </li>
     </script>
-<!-- js libraries -->
-  <script src="static/js/jquery.min.js"></script> <!-- jquery version
-  1.11.3-->
-  <script src="static/js/underscore-min.js"> </script>
-  <script src="static/js/backbone-min.js"> </script>
-  <script src="static/js/bootstrap.js"> </script>
-  <script src="static/js/bootstrap-tagsinput.min.js"> </script>
-  <script src="static/js/jqcloud.js"> </script> <!-- for tag cloud
-  visualization -->
-  <script src="static/js/BootSideMenu.js"> </script> <!-- bootstrap+jquery
-  plugin for side menu-->
-  <script src="static/js/oauth.js"> </script>
-  <script src="static/js/theme.js"> </script>
+
   <!--script
       src="//cdn.jsdelivr.net/emojione/1.5.0/lib/js/emojione.min.js"></script-->
-</body>
-</html>
+{% endblock %}
+
