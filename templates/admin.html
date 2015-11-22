@@ -2,28 +2,193 @@
 
 
 {% block body %}
-<div class="container" id="container">
-  <div class="form-wrapper well">
-    {% if error %}
-    <div class="alert alert-danger"><b>error:</b> {{ error }} </div>
-    {% endif %}
-    <p class="lead"> enter the phone number of the user, to grant
-    permissions to set tags</p>
-    <form class="form-horizontal" action="" method="post">
-      <div class="form-group">
-        <label class="form-label" for="phone-number">phone number</label>
-        <div class="controls">
-          <input type="tel" class="form-control" id="phone-number"
-          name="usertel" pattern='[\+]\d{2}[\-]\d{10}' placeholder="Phone Number">
-        </div>
-      </div>
-      <div class="form-group">
-        <div class="controls">
-          <button type="submit" class="btn btn-primary btn-lg">Submit</button>
-        </div>
-      </div>
-      <div class="clearfix"></div>
-    </form>
-  </div>
+<header>
+      <nav class="navbar navbar-inverse navbar-fixed-top custom-nav">
+        <div class="container">
+          <div class="navbar-header" >
+            <button type="button" class="navbar-toggle
+                                         collapsed" data-toggle="collapse"
+                    data-target="#navbar" aria-expanded="false"
+                    aria-controls="navbar">
+              <span class="sr-only">Toggle
+                navigation</span>
+              <span
+                 class="icon-bar"></span>
+              <span
+                 class="icon-bar"></span>
+              <span
+                 class="icon-bar"></span>
+            </button>
+            <img src="static/img/PAPAD5.png" class="papad-logo"
+            style="width:50px;"/>
+            <a id="homeAnchor"
+               class="navbar-brand custom-brand"
+               href="javascript:void(0)">Audio Tagger</a>
+          </div>
+          <div
+             id="navbar"
+             class="navbar-collapse
+                    collapse">
+            <!--ul class="nav nav-tabs pull-left main-nav">
+                <li role="presentation" class="active"><a href="#audio-list">Home</a></li>
+            <li role="presentation"><a href="#tag-clouds">Admin</a></li>
+            <li role="presentation"><a href="#upload-audio">Upload</a></li>
+</ul-->
+            <div class="pull-right user-state">
+              <!--button type="button" class="btn">
+                  <span id="signinmsg">
+                  </span>
+</button-->  
+    {% if not session.get('email') %}
+<a href="/login" ><button type="button" id="sign-in" class="btn">
+                                  <span id="signinview">Sign In</span>
+    </button></a>
+    {% else %}
+    {% if "session.get('email')" in superAdmins %}
+<a href="{{ url_for('admin') }}"><button type="button" id="sign-out" class="btn">
+                                  <span id="signinview">Admin</span>
+    </button></a>
+{% endif %}
+<div class="btn" id="signinmsg"><span class="glyphicon glyphicon-globe"></span>
+                <span >
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+                    {% for message in messages %}
+                          {{ message }}
+                              {% endfor %}
+          {% endif %}
+        {% endwith %}
+                  </span>
 </div>
+<a href="{{ url_for('logout') }}"><button type="button" id="sign-out" class="btn">
+
+                                  <span id="signinview">Sign out</span>
+    </button></a>
+    {% endif %}
+        </div>
+      </nav>
+    </header>
+    <div class="container" id="container">
+        <div class="col-md-6 col-lg-6">
+            <div class="form-wrapper well">
+                {% if error %}
+                <div class="alert alert-danger"><b>error:</b> {{ error }} </div>
+                {% endif %}
+                <p class="lead"> enter the Google email address of the
+                user to grant permission to set tags</p>
+                <form class="form-horizontal" action="/user"
+                    method="post">
+                    <div class="form-group">
+                        <label class="form-label" for="phone-number">Email</label>
+                        <div class="controls">
+                            <input type="email" class="form-control" id="phone-number"
+                                                                     name="email" placeholder="enter email">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="controls">
+                            <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-6">
+            <div class="form-wrapper well">
+                {% if error %}
+                <div class="alert alert-danger"><b>error:</b> {{ error }} </div>
+                {% endif %}
+                <p class="lead"> enter the URL of the audio files
+                directory</p>
+                <form class="form-horizontal"
+                      action="http://da.pantoto.org/api/url"
+                    method="post">
+                    <div class="form-group">
+                        <label class="form-label" for="phone-number">URL</label>
+                        <div class="controls">
+                            <input type="text" class="form-control"
+                                               id="url-audio"
+                                                                     name="url"
+                                                                     placeholder="enter audio url">
+                            <input type="text" class="form-control"
+                                               name="station_name"
+                                               placeholder="enter your station name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="controls">
+                            <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="container">
+        <div class="row">
+            <h2> User List </h2>
+    {% for user in users %}
+        <div class="col-md-6 col-lg-6"/* style="width: 500px;
+            margin-top:20px;"*/>
+            <div class="panel panel-default">
+                <div class="media">
+                    <div class="media-left">
+
+                        <img style="width: 200px;" class="media-object" src="{{
+                        user.picture }}"
+                                                                        alt="profile-img">
+
+                    </div>
+                    <div class="media-body" style="padding:15px;">
+                        <h4
+                                            class="media-heading">{{
+                                            user.name }} </h4>
+                        <ul class="list-group">
+                            <li class="list-group-item">{{ user.email }}
+                            </li>
+                            <li class="list-group-item"> 
+                                {% if user.isAdmin %}
+                                <p>Admin</p>
+                                {% else %}
+                                <p>user</p>
+                                {% endif %}
+                                </li>
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        </div>
+    </div>
+    <script id="rawjson">
+window.stations = window.stations || {};
+        window.stations = {"stations": 
+                [
+                    {
+                            "name":"default",
+                                    "adminUsers":["dinesh@servelots.com","bhanu@servelots.com","shalini@servelots.com","pradyumna@servelots.com"],
+                                            "store":"http://da.pantoto.org/api/stn/default"
+                                                },
+                                                    {
+                                                            "name":"radioactive",
+                                                                    "adminUsers":["dinesh@servelots.com"],
+                                                                            "store":"http://da.pantoto.org/api/stn/radioactive"
+                                                                                },
+                                                                                    {
+                                                                                            "name":"karnaticmuzic",
+                                                                                                    "adminUsers":["murali@nammacycle.in"],
+                                                                                                            "store":"http://da.pantoto.org/api/stn/karnaticmuzic"
+                                                                                                                },
+                                                                                                                    {
+                                                                                                                            "name":"anthillhacks",
+                                                                                                                                    "adminUsers":["pradyumna@servelots.com"],
+                                                                                                                                            "store":"http://da.pantoto.org/api/stn/anthillhacks"
+                                                                                                                                                }
+                                                                                                                                                    ]
+                                                                                                                                                      }
+    </script>
 {% endblock %}

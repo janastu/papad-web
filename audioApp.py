@@ -1,5 +1,6 @@
 from flask import (Flask, session, render_template, request, redirect,
-                   url_for, make_response, Blueprint, current_app, jsonify, flash, json)
+                   url_for, make_response, Blueprint, current_app,
+                   jsonify, flash, json)
 import requests
 import json
 from datetime import datetime, timedelta
@@ -7,10 +8,11 @@ from flask.ext.cors import CORS, cross_origin
 from flask_oauth2_login import GoogleLogin
 from flask_oauthlib.client import OAuth
 from flask.ext.pymongo import PyMongo
-
-    
-
-# Converting to JSON with bson.json_util of pymongo
+from bson import ObjectId
+from utilities import ObjectIdCleaner
+from bson.json_util import dumps
+from bson.json_util import loads
+from funcy import pluck, flatten
 
 
 app = Flask(__name__)
@@ -33,6 +35,10 @@ CORS(app, allow_headers=('Content-Type', 'Authorization'))
 mongo = PyMongo(app)
 
 
+@app.before_first_request
+def set_before_request_handlers():
+        mongo.db.add_son_manipulator(ObjectIdCleaner())
+
 
 @app.route('/', methods=['GET'])
 @cross_origin()
@@ -40,19 +46,15 @@ def index():
 
     # if auth_tok is in session already..
     if 'google_token' in session:
-        print repr(session)
         auth_tok = session['google_token']
-	me = session['message']
-	print repr(me)
+        me = session['message']
         flash("Welcome" + " " + me.get('name') + "!")
-        
-
     else:
-	session['message'] = {'email':''}
+        session['message'] = {'email': ''}
         auth_tok = {'access_token': '', 'refresh_token': ''}
-     
     return render_template('index.html', access_token=auth_tok,
-                           refresh_token=auth_tok, session=session['message'],  
+                           refresh_token=auth_tok,
+                           session=session['message'],
                            config=current_app.config)
 
 
@@ -89,7 +91,23 @@ def authenticateWithOAuth():
 @app.route('/admin', methods=['GET', 'POST'])
 @cross_origin()
 def admin():
-    return render_template('admin.html')
+    if 'google_token' in session:
+        auth_tok = session['google_token']
+        me = session['message']
+        flash("Welcome" + " " + me.get('name') + "!")
+    else:
+        session['message'] = {'email': ''}
+        auth_tok = {'access_token': '', 'refresh_token': ''}
+    superAdmins = flatten(pluck("adminUsers",
+                                app.config.get('STATIONS')))
+    print repr(superAdmins)
+    users = []
+    for user in mongo.db.users.find():
+            users.append(user)
+    return render_template('admin.html', access_token=auth_tok,
+                           refresh_token=auth_tok, session=session['message'],
+                           config=current_app.config, users=users,
+                           superAdmins=superAdmins)
 
 
 @app.route('/login')
@@ -106,7 +124,6 @@ def logout():
 
 @app.route('/login/authorized')
 def authorized():
-    
     resp = google.authorized_response()
     if resp is None:
         return 'Access denied: reason=%s error=%s' % (
@@ -116,16 +133,16 @@ def authorized():
     session['google_token'] = (resp['access_token'], '')
     me = google.get('userinfo')
     # user profiles record
-    # mongo.db.users.save(jsonify(me.data))
-    userdata = jsonify({"data": me.data})
-    message=json.dumps(me.data)
     session['message'] = me.data
-    # flash("Welcome" + me.data.get('name'))
+    user = loads(dumps(me.data))
+    if mongo.db.users.find_one({"email": user.get('email')}) is None:
+        mongo.db.users.save(user)
+    else:
+        mongo.db.users.find()
 
-    # return render_template('index.html', user_data=userdata.data, config=app.config, access_token = session['google_token'])
+    # flash("Welcome" + me.data.get('name'))
     # return jsonify({"data": me.data})
     return redirect(url_for('index'))
-
 
 
 @google.tokengetter
@@ -133,26 +150,35 @@ def get_google_oauth_token():
     return session.get('google_token')
 
 
+@app.route('/user', methods=['POST', 'GET'])
+@cross_origin()
+def user_check():
+    for station in mongo.db.stations.find():
+        print repr(station)
+
+    if request.method == 'GET':
+        return redirect(url_for('admin'))
+    else:
+        user = mongo.db.users.find_one({"email":
+                                        request.form.get('email')})
+        if user is None:
+            mongo.db.users.save({"email": request.form.get('email'),
+                                "isAdmin": "true"})
+            return make_response()
+        else:
+            mongo.db.users.update({"_id": ObjectId(user.get('id'))},
+                                  {"$set": {"isAdmin": "true"}})
+            print repr(mongo.db.users.find_one({"_id":
+                                                ObjectId(user.get('id'))}))
+            return make_response()
+    return redirect(url_for('admin'))
+
+
 @app.route('/signup', methods=['POST'])
 @cross_origin()
 def signup():
-    station = request.form.get('radiostation')
-    owner = request.form.get('firstname') + ' ' + request.form.get('lastname')
-    owneremail = request.form.get('email')
-    payload = {
-        'who': 'salus.sage@gmail.com',
-        'what': 'confirmed-radio-account',
-        'where': 'http://pantoto.org',
-        'how': {'how.radioStation': station, 'how.ownerName': owner,
-                 'how.owneremail': owneremail}
-        }
-    signupEndpoint = current_app.config.get('SWTSTORE_URL',
-                                            'SWTSTORE_URL')+'/api/sweets'+'?access_token=3fuJAPRXU4c8RdHVk9mYetE6d3tIOq'
-    print(payload, signupEndpoint)
-    requests.post(signupEndpoint, data=[payload])
     return redirect(url_for('admin'))
 
 if __name__ == '__main__':
-    # app = create_app()
     app.run(debug=app.config.get('DEBUG'),
             host=app.config.get('HOST'))

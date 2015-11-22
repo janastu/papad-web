@@ -44,27 +44,28 @@
                                   <span id="signinview">Sign In</span>
     </button></a>
     {% else %}
-    {% if "bhanu@servelots.com" in session.get('email') %}
-<a href="{{ url_for('admin') }}"><button type="button" id="sign-out" class="btn">
-                                  <span id="signinview">Admin</span>
-    </button></a>
-{% endif %}
-<div class="btn" id="signinmsg"><span class="glyphicon glyphicon-globe"></span>
-                <span >
-      {% with messages = get_flashed_messages() %}
-        {% if messages %}
-                    {% for message in messages %}
-                          {{ message }}
-                              {% endfor %}
-          {% endif %}
-        {% endwith %}
-                  </span>
-</div>
-<a href="{{ url_for('logout') }}"><button type="button" id="sign-out" class="btn">
-                                  <span id="signinview">Sign out</span>
-    </button></a>
+        <button class="btn dropdown-toggle" id="signinmsg" data-toggle="dropdown"
+                                                           aria-haspopup="true" aria-expanded="false" ><span class="glyphicon glyphicon-globe"></span>
+                                                           <span >
+                                                               {% with messages = get_flashed_messages() %}
+                                                               {% if messages %}
+                                                               {% for message in messages %}
+                                                               {{ message }}
+                                                               {% endfor %}
+                                                               {% endif %}
+                                                               {% endwith %}
+                                                           </span>
+        </button>
+                {% if "bhanu@servelots.com" in session.get('email') %}
+                <a href="{{ url_for('admin') }}"><button type="button" id="sign-out" class="btn">
+                        <span id="signinview">Control Room</span>
+                    </button></a>
+                    {% endif %}
+                <a href="{{ url_for('logout') }}"><button type="button" id="sign-out" class="btn">
+                        <span >Sign out</span>
+                    </button></a>
     {% endif %}
-        </div>
+            </div>
       </nav>
     </header>
     <section class="container col-md-3 col-lg-3 col-sm-3" id="tag-clouds">
@@ -137,6 +138,7 @@
       audioSwtr.allowedContexts = '{{ config.ALLOWED_CONTEXTS }}';
       audioSwtr.session_data = '{{ session }}';
       audioSwtr.user_email = '{{ session.email }}';
+      STATIONS = '{{ stations }}';
     </script>
 
 
